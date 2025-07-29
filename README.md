@@ -34,8 +34,9 @@ This repository is structured as a monorepo, containing multiple services writte
 The repository is organized into two main sections:
 
 - **backing-services**: Contains infrastructure components that support the application services
-  - Kafka for event streaming and message processing
-  - MariaDB for relational database storage
+  - Kafka for event streaming and message processing (with its own docker-compose.yml)
+  - MariaDB for relational database storage (with its own docker-compose.yml)
+  - Each backing service has its own Docker Compose file in its respective directory
 
 - **services**: Contains the actual application services, currently focused on Go implementations
   - Common utilities and shared code

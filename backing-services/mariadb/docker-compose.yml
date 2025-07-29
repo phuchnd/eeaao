@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: eeaao
+      MYSQL_USER: eeaao
+      MYSQL_PASSWORD: secret
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d
+    networks:
+      - mariadb-network
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  mariadb-data:
+
+networks:
+  mariadb-network:
+    driver: bridge
