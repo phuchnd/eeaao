@@ -2,7 +2,7 @@ package logging
 
 // Logger is the logger abstraction. It largely follows logrus/zap structure.
 //
-//go:generate mockery --name=Logger --case=snake
+//go:generate mockery --name=Logger --case=snake --disable-version-string
 type Logger interface {
 	// Error creates a log entry that includes a Key/ErrorValue pair.
 	Error(args ...interface{})

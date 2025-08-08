@@ -27,7 +27,7 @@ var (
 
 // Provider represents the configuration provider.
 //
-//go:generate mockery --name=Provider --case=snake
+//go:generate mockery --name=Provider --case=snake --disable-version-string
 type Provider interface {
 	// Get returns a configuration with given name.
 	Get(name string) interface{}

@@ -3,21 +3,22 @@ package http
 import (
 	"context"
 	"fmt"
-	"github.com/avast/retry-go"
-	"github.com/phuchnd/eeaao/services/go/common/observability/logging"
 	"net/http"
 	"time"
+
+	"github.com/avast/retry-go"
+	"github.com/phuchnd/eeaao/services/go/common/observability/logging"
 )
 
 // doFunc is an executable function which will return http status code and the error
 type doFunc func(ctx context.Context) (int, error)
 
-func (t *httpClientImpl) retryAndObserve(ctx context.Context, endpoint, method string, doFunc doFunc) error {
+func (t *httpClientImpl) retryAndObserve(ctx context.Context, httpReq *http.Request, doFunc doFunc) error {
 	start := time.Now()
 	var responseCode int
 	defer func() {
 		code := http.StatusText(responseCode)
-		opencensus.SendExternalServiceMetric(ctx, start, t.cfg.ServiceName, t.cfg.ExternalServiceName, endpoint, method, code)
+		t.metricsExporter.SendExternalServiceMetric(ctx, start, t.cfg.ServiceName, t.cfg.ExternalServiceName, httpReq.URL.Path, httpReq.Method, code)
 	}()
 
 	err := retry.Do(func() error {
@@ -25,7 +26,7 @@ func (t *httpClientImpl) retryAndObserve(ctx context.Context, endpoint, method s
 		responseCode, err = doFunc(ctx)
 		if err != nil {
 			logger := logging.FromContext(ctx)
-			logger.Warnw(fmt.Sprintf("[%s] %s: inner attempt failed", method, endpoint), "error", err)
+			logger.Warnw(fmt.Sprintf("[%s] %s: inner attempt failed", httpReq.Method, httpReq.URL.Path), "error", err)
 		}
 		return err
 	},

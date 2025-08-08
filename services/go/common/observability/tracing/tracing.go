@@ -2,8 +2,9 @@ package tracing
 
 import (
 	"context"
-	"google.golang.org/grpc/metadata"
 	"net/http"
+
+	"google.golang.org/grpc/metadata"
 )
 
 func PropagateRequestIDToContext(ctx context.Context) context.Context {

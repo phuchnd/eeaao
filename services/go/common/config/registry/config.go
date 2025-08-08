@@ -13,7 +13,7 @@ var nopSetDefaultFn = SetDefaultConfigFunc(func(v *viper.Viper) {})
 // ConfigOpt is a configuration on a config.
 type ConfigOpt func(c *configImpl)
 
-//go:generate mockery --name=Config --case=snake
+//go:generate mockery --name=Config --case=snake --disable-version-string
 type Config interface {
 	SetDefault(v *viper.Viper)
 	Get(v *viper.Viper) interface{}

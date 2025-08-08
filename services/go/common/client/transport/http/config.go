@@ -1,7 +1,8 @@
 package http
 
 type Config struct {
-	Name            string
-	MaxRetries      int
-	BackoffDelaysMs int
+	ServiceName         string
+	ExternalServiceName string
+	MaxRetries          int
+	BackoffDelaysMs     int
 }

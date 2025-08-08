@@ -2,6 +2,7 @@ package tracing
 
 import (
 	"context"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"

@@ -3,18 +3,29 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/phuchnd/eeaao/services/go/common/observability/tracing"
 	"time"
 
 	"github.com/avast/retry-go"
 	"github.com/phuchnd/eeaao/services/go/common/observability/logging"
+	"github.com/phuchnd/eeaao/services/go/common/observability/metrics"
+	"github.com/phuchnd/eeaao/services/go/common/observability/tracing"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-func propagateAndObservationUnaryClientInterceptor(cfg *Config) grpc.UnaryClientInterceptor {
+func propagateAndObservationUnaryClientInterceptor(cfg *Config, metricsExporter metrics.Metrics) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		newCtx := tracing.PropagateRequestIDToContext(ctx)
 		var err error
+		start := time.Now()
+		defer func() {
+			code := codes.OK
+			if err != nil {
+				code = status.Code(err)
+			}
+			metricsExporter.SendExternalServiceMetric(newCtx, start, cfg.ServiceName, cfg.ExternalServiceName, method, "", code.String())
+		}()
 
 		err = retry.Do(func() error {
 			err := invoker(newCtx, method, req, reply, cc, opts...)
